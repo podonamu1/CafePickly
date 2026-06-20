@@ -13,7 +13,7 @@ def topic_marker(name: str) -> str:
     return "은"
 
 def generate_dummy_summary(cafe) -> str:
-    name = cafe["name"]
+    name = cafe["place_name"]
     marker = topic_marker(name)
     distance = cafe["distance"]
 

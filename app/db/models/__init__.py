@@ -1,0 +1,1 @@
+from app.db.models.cafe import Cafe

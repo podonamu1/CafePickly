@@ -1,11 +1,16 @@
 # App 시작점
 from fastapi import FastAPI
+
+from app.db.session import engine
+from app.db.base import Base
 from app.api.routes import cafes
 
 app = FastAPI(
     title="CafePickly",
     #version="0.1.0"
 )
+
+Base.metadata.create_all(bind=engine)
 
 app.include_router(cafes.router)
 
