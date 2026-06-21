@@ -7,10 +7,9 @@ class Cafe(Base):
     __tablename__ = "cafes"
 
     id = Column(Integer, primary_key=True, index=True)
-
     place_id = Column(String, unique=True, index=True, nullable=False)
-    place_name = Column(String, nullable=False)
 
+    place_name = Column(String, nullable=False)
     category_name = Column(String, nullable=True)
     address_name = Column(String, nullable=True)
     road_address_name = Column(String, nullable=True)
@@ -22,8 +21,12 @@ class Cafe(Base):
     y = Column(String, nullable=True)
     distance = Column(String, nullable=True)
 
-    is_franchsise = Column(Boolean, default=False, nullable=False)
+    is_franchise = Column(Boolean, default=False, nullable=False)
     ai_summary = Column(Text, nullable=True)
+    summary_updated_at = Column(
+        DateTime(timezone=True),
+        nullable=True,
+    )
 
     created_at = Column(
         DateTime(timezone=True),

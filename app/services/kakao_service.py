@@ -7,7 +7,6 @@ def search_cafes_from_kakao(query: str, x: float, y: float, radius: int = 1000, 
     headers = {
         "Authorization": f"KakaoAK {settings.KAKAO_REST_API_KEY}"
     }
-    print("API KEY: ", settings.KAKAO_REST_API_KEY)
 
     params = {
         "query": query,
@@ -25,12 +24,8 @@ def search_cafes_from_kakao(query: str, x: float, y: float, radius: int = 1000, 
         timeout=10
     )
 
-    print("status:", response.status_code)
-    print("body:", response.text)
-
-    print("KAKAO PARAMS:", params)
     response.raise_for_status()
+
     data = response.json()
-    print("FIRST DOC:", data["documents"][0])
 
     return data.get("documents", [])

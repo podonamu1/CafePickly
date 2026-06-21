@@ -1,3 +1,4 @@
+from datetime import datetime
 from pydantic import BaseModel, ConfigDict
 
 class CafeBase(BaseModel):
@@ -8,16 +9,19 @@ class CafeBase(BaseModel):
     road_address_name: str | None = None
     phone: str | None = None
     place_url: str | None = None
-    x: str | None = None
-    y: str | None = None
-    distance: str | None = None
+
+    x: float | None = None
+    y: float | None = None
+    distance: int | None = None
+
     is_franchise: bool = False
     ai_summary: str | None = None
+
+    created_at: datetime
+    updated_at: datetime
 
 class CafeListItem(CafeBase):
     model_config = ConfigDict(from_attributes=True)
 
 class CafeDetailResponse(CafeBase):
-    id: int
-
     model_config = ConfigDict(from_attributes=True)

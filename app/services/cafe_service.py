@@ -1,5 +1,6 @@
 import requests
 import math as m
+from datetime import datetime, timezone
 
 from sqlalchemy.orm import Session
 
@@ -7,23 +8,27 @@ from app.core.config import settings
 from app.db.models.cafe import Cafe
 
 from app.services.ai_service import generate_ai_summary
-from app.services.ai_service import generate_dummy_summary
+from app.services.ai_service import generate_dummy_summary, is_summary_expired
 from app.services.kakao_service import search_cafes_from_kakao
-from app.utils.franchise_filter import FRANCHISE_KEYWORDS
+from app.utils.franchise_filter import is_franchise
 
-FRANCHISE_KEYWORDS = [
-    "스타벅스", "투썸", "할리스", "이디야", "커피빈", "파스쿠찌",
-    "메가MGC", "메가커피", "컴포즈", "빽다방", "더벤티", "공차",
-    "우지커피", "발도스커피", "텐퍼센트", "커피에반하다",
-    "카페봄봄", "하삼동커피", "매머드커피", "감성커피",
-    "커피베이", "엔제리너스", "폴바셋", "샌두", "더무인"
-]
+async def get_or_create_summary(cafe, db):
+    # 1. 기존 요약 있고 TTL 안 지났으면 그대로 사용
+    if cafe.ai_summary and not is_summary_expired(cafe.summary_updated_at):
+        return cafe.ai_summary
 
-def is_franchise(name:str) -> bool:
-    for brand in FRANCHISE_KEYWORDS:
-        if brand in name:
-            return True
-    return False
+    # 2. TTL 지났거나 요약 없으면 새로 생성
+    new_summary = generate_dummy_summary(cafe)
+
+    # 3. DB 에 저장
+    cafe.ai_summary = new_summary
+    cafe.summary_updated_at = datetime.now(timezone.utc)
+
+    db.add(cafe)
+    db.commit()
+    db.refresh(cafe)
+
+    return new_summary
 
 def calculate_score(cafe):
     radius = 1000
@@ -47,8 +52,6 @@ def calculate_score(cafe):
 
 
 def get_recommend_cafes(lat: float, lon: float, radius: int = 1000, limit: int = 5):
-    print("NEW GETCAFE")
-
     docs = search_cafes_from_kakao(
         query="카페",
         x = lat,
@@ -70,7 +73,20 @@ def get_recommend_cafes(lat: float, lon: float, radius: int = 1000, limit: int =
         except ValueError:
             distance = 999999
 
+        # 프랜차이즈 여부 검사
         if is_franchise(name):
+            continue
+
+        # 커피숍 아닌 카페 제거
+        category = doc.get("category_name", "")
+        name = doc.get("place_name", "")
+
+        if not category.startswith("음식점 > 카페"):
+            continue
+
+        blocked_keywords = ["스터디카페", "헤어카페", "키즈카페", "만화카페", "PC카페", "애견카페"]
+
+        if any(keyword in name for keyword in blocked_keywords):
             continue
 
         cafe = {
@@ -87,14 +103,14 @@ def get_recommend_cafes(lat: float, lon: float, radius: int = 1000, limit: int =
             "rating": 0.0,
             "review_count": 0,
             "is_franchise": is_franchise(doc.get("place_name", "")),
-            "ai_summary": "가볍게 방문하기 좋은 카페입니다.",
+            "ai_summary": generate_dummy_summary(doc),
         }
 
         raw_score = calculate_score(cafe)
         score = round(100 * raw_score, 1)
 
         cafe["score"] = score
-        cafe["summary"] = generate_dummy_summary(cafe)
+        cafe["ai_summary"] = generate_dummy_summary(doc)
         cafes.append(cafe)
 
 
@@ -119,11 +135,11 @@ def upsert_cafe(db: Session, item: dict) -> Cafe:
     cafe.road_address_name = item.get("road_address_name")
     cafe.phone = item.get("phone")
     cafe.place_url = item.get("place_url")
-    cafe.x = item.get("x")
-    cafe.y = item.get("y")
-    cafe.distance = item.get("distance")
+    cafe.x = float(item.get("x")) if item.get("x") is not None else None
+    cafe.y = float(item.get("y")) if item.get("y") is not None else None
+    cafe.distance = int(item.get("distance")) if item.get("distance") is not None else None
     cafe.is_franchise = is_franchise(item.get("place_name", ""))
-    cafe.ai_summary = cafe.ai_summary or "가볍게 방문하기 좋은 카페입니다."
+    cafe.ai_summary = cafe.ai_summary or generate_dummy_summary(item)
 
     return cafe
 
@@ -142,6 +158,7 @@ def search_and_save_cafes(
         radius = radius,
         limit = limit,
     )
+
     cafes: list[Cafe] = []
 
     for item in items:
@@ -157,3 +174,21 @@ def search_and_save_cafes(
 
     return cafes
 
+
+def cafe_to_response(cafe: Cafe) -> dict:
+    return {
+        "place_id": cafe.place_id,
+        "place_name": cafe.place_name,
+        "category_name": cafe.category_name,
+        "address_name": cafe.address_name,
+        "road_address_name": cafe.road_address_name,
+        "phone": cafe.phone,
+        "place_url": cafe.place_url,
+        "x": cafe.x,
+        "y": cafe.y,
+        "distance": cafe.distance,
+        "is_franchise": cafe.is_franchise,
+        "ai_summary": cafe.ai_summary,
+        "created_at": cafe.created_at,
+        "updated_at": cafe.updated_at,
+    }
