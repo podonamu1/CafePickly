@@ -34,7 +34,10 @@ def calculate_score(cafe):
     radius = 1000
 
     # 거리
-    score_dist = max(0, 1 - (cafe["distance"] / radius))
+    if cafe["distance"] <= 100:
+        score_dist = 1.0
+    else:
+        score_dist = max(0, 1 - ((cafe["distance"] - 100) / (radius - 100)) ** 0.7)
 
     # 평점
     basic_score_rating = max(0, min((cafe["rating"] - 3.5) / 1.5, 1))
@@ -84,9 +87,30 @@ def get_recommend_cafes(lat: float, lon: float, radius: int = 1000, limit: int =
         if not category.startswith("음식점 > 카페"):
             continue
 
-        blocked_keywords = ["스터디카페", "헤어카페", "키즈카페", "만화카페", "PC카페", "애견카페"]
+        EXCLUDE_KEYWORDS = [
+            # 동물/펫
+            "애견", "반려견", "반려동물", "강아지카페", "고양이카페", "동물카페",
+            "펫카페", "펫동반", "펫 동반",
 
-        if any(keyword in name for keyword in blocked_keywords):
+            # 놀이/체험형
+            "보드게임카페", "보드게임", "만화카페", "키즈카페", "방방",
+            "실내놀이터", "VR카페", "VR", "플스방", "닌텐도", "멀티방", "DVD방",
+
+            # 공부/업무형
+            "스터디카페", "스터디룸", "독서실", "공유오피스", "코워킹",
+
+            # 휴식/찜질/마사지형
+            "수면카페", "낮잠카페", "찜질카페", "찜질방", "좌욕", "족욕",
+            "마사지", "안마", "스파", "힐링센터",
+
+            # 룸/특수 목적
+            "룸카페", "파티룸", "공간대여",
+
+            # 운세/성인/흡연
+            "타로카페", "사주카페", "운세", "흡연카페", "전자담배",
+        ]
+
+        if any(keyword in name for keyword in EXCLUDE_KEYWORDS):
             continue
 
         cafe = {
@@ -140,7 +164,7 @@ def upsert_cafe(db: Session, item: dict) -> Cafe:
     cafe.distance = int(item.get("distance")) if item.get("distance") is not None else None
     cafe.is_franchise = is_franchise(item.get("place_name", ""))
     cafe.ai_summary = cafe.ai_summary or generate_dummy_summary(item)
-
+    cafe.score = round(100 * calculate_score(item), 1)
     return cafe
 
 
@@ -191,4 +215,5 @@ def cafe_to_response(cafe: Cafe) -> dict:
         "ai_summary": cafe.ai_summary,
         "created_at": cafe.created_at,
         "updated_at": cafe.updated_at,
+        "score" : cafe.score,
     }

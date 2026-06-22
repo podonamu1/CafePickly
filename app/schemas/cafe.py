@@ -20,8 +20,16 @@ class CafeBase(BaseModel):
     created_at: datetime
     updated_at: datetime
 
+    score: float | None =  None
+
 class CafeListItem(CafeBase):
     model_config = ConfigDict(from_attributes=True)
 
 class CafeDetailResponse(CafeBase):
     model_config = ConfigDict(from_attributes=True)
+
+class CafeSearchResponse(BaseModel):
+    count: int
+    low_result_count: bool
+    message: str | None = None
+    cafes: list[CafeListItem]
