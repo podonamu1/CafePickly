@@ -168,6 +168,41 @@ def upsert_cafe(db: Session, item: dict) -> Cafe:
     return cafe
 
 
+def build_search_response(cafes: list, radius: int):
+    count = len(cafes)
+
+    if count == 0:
+        suggested_radius = min(radius * 2, 5000)
+
+        return {
+            "count": 0,
+            "low_result_count": True,
+            "message": "검색 결과가 없어요. 반경을 넓히면 더 많은 후보를 볼 수 있어요.",
+            "suggested_radius": suggested_radius,
+            "cafes": []
+        }
+
+    if count < 3:
+        suggested_radius = min(radius * 2, 5000)
+
+        return {
+            "count": count,
+            "low_result_count": True,
+            "message": "근처 카페가 적어요. 반경을 넓히면 더 많은 후보를 볼 수 있어요.",
+            "suggested_radius": suggested_radius,
+            "cafes": cafes,
+        }
+
+    return {
+        "count": count,
+        "low_result_count": False,
+        "message": None,
+        "suggested_radius": None,
+        "cafes": cafes,
+    }
+
+
+
 def search_and_save_cafes(
     db: Session,
     query: str,
@@ -195,7 +230,7 @@ def search_and_save_cafes(
 
     for cafe in cafes:
         db.refresh(cafe)
-
+        
     return cafes
 
 
@@ -217,3 +252,5 @@ def cafe_to_response(cafe: Cafe) -> dict:
         "updated_at": cafe.updated_at,
         "score" : cafe.score,
     }
+
+

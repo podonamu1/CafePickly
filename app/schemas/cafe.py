@@ -16,6 +16,7 @@ class CafeBase(BaseModel):
 
     is_franchise: bool = False
     ai_summary: str | None = None
+    summary_updated_at: datetime | None = None
 
     created_at: datetime
     updated_at: datetime
@@ -33,3 +34,4 @@ class CafeSearchResponse(BaseModel):
     low_result_count: bool
     message: str | None = None
     cafes: list[CafeListItem]
+    suggested_radius: int | None = None
