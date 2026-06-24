@@ -5,6 +5,7 @@ function App() {
   const [cafes, setCafes] = useState([]);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [radius, setRadius] = useState(1000);
 
   async function handleClick() {
     setLoading(true);
@@ -23,7 +24,7 @@ function App() {
                 const y = position.coords.latitude;
 
                 const response = await fetch(
-                    `http://localhost:8000/cafes/search?query=카페&x=${x}&y=${y}&radius=1000`
+                    `http://localhost:8000/cafes/search?query=카페&x=${x}&y=${y}&radius=${radius}`
                 );
 
                 const data = await response.json();
@@ -51,6 +52,23 @@ function App() {
     <main>
       <h1>CafePickly</h1>
       <p>근처 괜찮은 개인 카페를 추천해 드립니다.</p>
+
+      <div className="radius-selector">
+          <p>검색 반경</p>
+
+          <div className="radius-buttons">
+              {[500, 1000, 1500].map((value) => (
+                <button
+                    key={value}
+                    type="button"
+                    className={radius === value? "radius-button active" : "radius-button"}
+                    onClick={() => setRadius(value)}
+                >
+                    {value}m
+                </button>
+              ))}
+          </div>
+      </div>
 
       <button onClick={handleClick}>카페 추천 받기</button>
 

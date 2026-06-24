@@ -90,3 +90,42 @@ button:hover {
 .map-link:hover {
   background: #ead8c8;
 }
+
+.radius-selector {
+  margin: 24px 0 8px;
+  text-align: center;
+}
+
+.radius-selector p {
+  margin: 0 0 10px;
+  font-weight: 700;
+}
+
+.radius-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.radius-button {
+  margin: 0;
+  padding: 10px 14px;
+  border: 1px solid #d9c6b7;
+  border-radius: 999px;
+  background: #fffaf5;
+  color: #4a3124;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.radius-button:hover {
+  background: #f5eadf;
+}
+
+.radius-button.active {
+  background: #5b3d2e;
+  color: white;
+  border-color: #5b3d2e;
+}
