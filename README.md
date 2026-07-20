@@ -1,67 +1,85 @@
 # CafePickly
 
-CafePickly는 현재 위치를 기준으로 근처 카페를 추천해주는 FastAPI 기반 카페 추천 API입니다.
+CafePickly는 현재 위치를 기준으로 근처 카페를 추천해주는 FastAPI + React 기반 웹 애플리케이션입니다.
 
 카카오 로컬 API를 이용해 주변 카페를 검색하고, 프랜차이즈 및 일부 특수 업종을 필터링한 뒤 거리와 자체 점수를 기준으로 추천 결과를 반환합니다.
 
 ## Features
 
-* 주어진 위치 좌표 기반 카페 검색
-* 카카오 로컬 API 연동
+* 브라우저 현재 위치를 이용한 주변 카페 검색
+* 500m, 1000m, 1500m 검색 반경 선택
 * 프랜차이즈 카페 필터링
 * 애견카페, 보드게임카페 등 일부 특수 업종 제외
 * 거리 기반 추천 점수 계산
 * 카페 정보 DB 저장 및 업데이트
-* 검색 결과 부족 시 추천 확장 반경 반환
-* 카페 상세 조회 API 제공
+* 검색 결과 부족 및 위치 권한 오류 안내
+* 카카오맵 상세 페이지 연결
+* 카페 이름, 거리, 주소, 요약 정보 제공
 
 ## Used
 
-* Python
-* FastAPI
-* SQLAlchemy
-* SQLite
-* Kakao Local API
+| 영역 | 기술 | 
+| Frontend | React, Vite |
+| Backend | Python, FastAPI |
+| Database | SQLAlchemy, SQLite |
+| 외부 API | Kakao Local API |
 
 ## Installing & Executing
 
-### 1. 가상환경 생성 및 실행
+### 1. 저장소 복제
+
+```bash
+git clone https://github.com/podonamu1/CafePickly.git
+cd CafePickly
+```
+
+### 2. 백엔드 가상환경 생성 및 실행
 
 ```bash
 python -m venv .venv
 ```
 
-Windows PowerShell 기준:
+Windows PowerShell:
 
-```bash
-.venv\Scripts\activate
+```powershell
+.venv\Scripts\Activate.ps1
 ```
 
-### 2. 패키지 설치
+### 3. 백엔드 패키지 설치
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 3. 환경 변수 설정
+### 4. 환경 변수 설정
 
-프로젝트 루트에 `.env` 파일을 만들고 아래 값을 설정합니다.
+프로젝트 루트에 `.env` 파일을 만들고 카카오 REST API 키를 설정합니다.
 
 ```env
 KAKAO_REST_API_KEY=your_kakao_rest_api_key
 ```
 
-### 4. 서버 실행
+### 5. 백엔드 실행
 
 ```bash
 uvicorn app.main:app --reload
 ```
 
-서버 실행 후 아래 주소에서 Swagger 문서를 확인할 수 있습니다.
+- API 서버: `http://localhost:8000`
+- Swagger 문서: `http://localhost:8000/docs`
 
-```txt
-http://127.0.0.1:8000/docs
+### 6. 프런트엔드 설치 및 실행
+
+새 터미널을 열고 실행합니다.
+
+```bash
+cd frontend
+npm install
+npm run dev
 ```
+
+브라우저에서 `http://localhost:5173`을 열고 위치 권한을 허용합니다.
+
 
 ## API Examples
 
@@ -141,4 +159,4 @@ curl "http://127.0.0.1:8000/cafes/1697987787"
 * 현재 추천 점수는 거리 중심의 단순 점수입니다.
 * 실제 리뷰, 평점, 혼잡도 기반 추천은 아직 적용되지 않았습니다.
 * AI 요약은 향후 OpenAI API 연동 후 개선할 예정입니다.
-* 프론트엔드는 아직 구현되지 않았습니다.
+* 위치 검색을 사용하려면 위치 권한이 필요합니다.
