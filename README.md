@@ -19,6 +19,7 @@ CafePickly는 현재 위치를 기준으로 근처 카페를 추천해주는 Fas
 ## Used
 
 | 영역 | 기술 | 
+| --- | --- |
 | Frontend | React, Vite |
 | Backend | Python, FastAPI |
 | Database | SQLAlchemy, SQLite |
