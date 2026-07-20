@@ -1,4 +1,6 @@
 import "./App.css";
+import CafeCard from "./components/CafeCard";
+import RadiusSelector from "./components/RadiusSelector";
 import { useState } from "react";
 
 function App() {
@@ -8,7 +10,7 @@ function App() {
   const [radius, setRadius] = useState(1000);
   const [hasSearched, setHasSearched] = useState(false);
   const [errorType, setErrorType] = useState("");
-  
+
   async function handleClick() {
     setLoading(true);
     setMessage("");
@@ -58,22 +60,7 @@ function App() {
       <h1>CafePickly</h1>
       <p>근처 괜찮은 개인 카페를 추천해 드립니다.</p>
 
-      <div className="radius-selector">
-          <p>검색 반경</p>
-
-          <div className="radius-buttons">
-              {[500, 1000, 1500].map((value) => (
-                <button
-                    key={value}
-                    type="button"
-                    className={radius === value? "radius-button active" : "radius-button"}
-                    onClick={() => setRadius(value)}
-                >
-                    {value}m
-                </button>
-              ))}
-          </div>
-      </div>
+      <RadiusSelector radius={radius} onChange={setRadius} />
 
       <button onClick={handleClick}>카페 추천 받기</button>
 
@@ -81,31 +68,7 @@ function App() {
 
       <section className="cafe-list">
         {cafes.map((cafe) => (
-          <article className="cafe-card" key={cafe.place_id}>
-              <div className="cafe-card-header">
-                  <h2>{cafe.place_name}</h2>
-                  <span className="distance">{cafe.distance}m</span>
-              </div>
-
-              <p className="summary">
-                  {cafe.ai_summary || "요약 준비 중입니다."}
-              </p>
-
-              <p className="address">
-                  {cafe.road_address_name || cafe.address_name}
-              </p>
-
-              {cafe.place_url && (
-                  <a
-                    className="map-link"
-                    href={cafe.place_url}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    카카오맵에서 보기
-                  </a>
-              )}
-          </article>
+          <CafeCard key={cafe.place_id} cafe={cafe} />
         ))}
       </section>
 
