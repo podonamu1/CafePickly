@@ -1,59 +1,20 @@
 import "./App.css";
 import CafeCard from "./components/CafeCard";
 import RadiusSelector from "./components/RadiusSelector";
+import useCafeSearch from "./hooks/useCafeSearch";
 import { useState } from "react";
 
 function App() {
-  const [cafes, setCafes] = useState([]);
-  const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState(false);
   const [radius, setRadius] = useState(1000);
-  const [hasSearched, setHasSearched] = useState(false);
-  const [errorType, setErrorType] = useState("");
 
-  async function handleClick() {
-    setLoading(true);
-    setMessage("");
-    setHasSearched(true)
-    setErrorType("");
-
-    if (!navigator.geolocation) {
-        setMessage("이 브라우저에서는 현재 위치를 사용할 수 없습니다.");
-        setLoading(false);
-        return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-        async (position) => {
-            try {
-                const x = position.coords.longitude;
-                const y = position.coords.latitude;
-
-                const response = await fetch(
-                    `http://localhost:8000/cafes/search?query=카페&x=${x}&y=${y}&radius=${radius}`
-                );
-
-                const data = await response.json();
-
-                setCafes(data.cafes ?? []);
-                setMessage(data.message ?? "");
-            }
-            catch (error) {
-                setMessage("카페 정보를 불러오지 못했습니다.");
-                console.error(error);
-            }
-            finally {
-                setLoading(false);
-            }
-        },
-        (error) => {
-            setErrorType("location");
-            setMessage("현재 위치를 가져오지 못했습니다. 위치 권한을 확인해 주세요.");
-            console.error(error);
-            setLoading(false);
-        }
-    );
-  }
+  const {
+    cafes,
+    message,
+    loading,
+    hasSearched,
+    errorType,
+    handleSearch,
+  } = useCafeSearch();
 
   return (
     <main>
@@ -62,7 +23,9 @@ function App() {
 
       <RadiusSelector radius={radius} onChange={setRadius} />
 
-      <button onClick={handleClick}>카페 추천 받기</button>
+      <button onClick={() => handleSearch(radius)}>
+          카페 추천 받기
+      </button>
 
       {loading && <p>불러오는 중...</p>}
 

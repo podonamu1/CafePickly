@@ -2,7 +2,7 @@ function CafeCard({ cafe }) {
     const address = cafe.road_address_name || cafe.address_name;
 
     return (
-        <article className="cafe-card" key={cafe.place_id}>
+        <article className="cafe-card">
               <div className="cafe-card-header">
                   <h2>{cafe.place_name}</h2>
                   <span className="distance">{cafe.distance}m</span>
@@ -13,7 +13,7 @@ function CafeCard({ cafe }) {
               </p>
 
               <p className="address">
-                  {cafe.road_address_name || cafe.address_name}
+                  {address}
               </p>
 
               {cafe.place_url && (

@@ -142,9 +142,6 @@ def get_recommend_cafes(lat: float, lon: float, radius: int = 1000, limit: int =
     return cafes[:limit]
 
 def upsert_cafe(db: Session, item: dict) -> Cafe:
-    print("UPSERT ITEM:", item)
-    print("UPSERT ITEM KEYS:", item.keys())
-
     place_id = item.get("place_id")
 
     cafe = db.query(Cafe).filter(Cafe.place_id == place_id).first()
