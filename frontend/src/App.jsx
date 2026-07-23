@@ -1,8 +1,10 @@
 import "./App.css";
 import CafeCard from "./components/CafeCard";
+import CafeDetail from "./components/CafeDetail";
 import RadiusSelector from "./components/RadiusSelector";
 import useCafeSearch from "./hooks/useCafeSearch";
 import { useState } from "react";
+import { Route, Routes } from "react-router-dom";
 
 function App() {
   const [radius, setRadius] = useState(1000);
@@ -16,7 +18,7 @@ function App() {
     handleSearch,
   } = useCafeSearch();
 
-  return (
+  const searchPage = (
     <main>
       <h1>CafePickly</h1>
       <p>근처 괜찮은 개인 카페를 추천해 드립니다.</p>
@@ -52,6 +54,13 @@ function App() {
       )}
 
     </main>
+  );
+
+  return (
+    <Routes>
+      <Route path="/" element={searchPage} />
+      <Route path="/cafes/:placeId" element={<CafeDetail />} />
+    </Routes>
   );
 }
 

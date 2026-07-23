@@ -30,9 +30,13 @@ def topic_marker(name: str) -> str:
 
 
 def generate_dummy_summary(cafe) -> str:
-    name = cafe["place_name"]
+    if isinstance(cafe, dict):
+        name = cafe["place_name"]
+        distance = int(cafe.get("distance", 0))
+    else:
+        name = cafe.place_name
+        distance = int(getattr(cafe, "distance", 0) or 0)
     marker = topic_marker(name)
-    distance = int(cafe["distance"])
 
     if distance <= 300:
         return f"{name}{marker} 현재 위치에서 매우 가까워 가볍게 들르기 좋은 카페입니다."

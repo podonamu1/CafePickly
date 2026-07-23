@@ -43,6 +43,7 @@ button:hover {
   background: white;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
   border: 1px solid #eee0d2;
+  cursor: pointer;
 }
 
 .cafe-card-header {
@@ -147,4 +148,108 @@ button:hover {
 .empty-state p {
   margin: 6px 0;
   color: #71645a;
+}
+
+.detail-page {
+  max-width: 760px;
+}
+
+.back-button {
+  margin: 0 0 20px;
+  padding: 10px 14px;
+  background: transparent;
+  color: #5b3d2e;
+  font-weight: 700;
+}
+
+.back-button:hover {
+  background: #ead8c8;
+}
+
+.detail-card {
+  padding: 36px;
+  border: 1px solid #eee0d2;
+  border-radius: 24px;
+  background: white;
+  box-shadow: 0 12px 32px rgba(70, 45, 30, 0.1);
+}
+
+.detail-category {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #f1e3d3;
+  color: #5b3d2e;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.detail-card h1 {
+  margin: 18px 0 12px;
+  font-size: 36px;
+  line-height: 1.2;
+}
+
+.detail-summary {
+  padding: 18px;
+  border-radius: 14px;
+  background: #fffaf5;
+  color: #55483f;
+  line-height: 1.7;
+}
+
+.detail-info {
+  margin: 28px 0;
+}
+
+.detail-info div {
+  display: grid;
+  grid-template-columns: 70px 1fr;
+  gap: 14px;
+  padding: 16px 0;
+  border-bottom: 1px solid #eee0d2;
+}
+
+.detail-info dt {
+  color: #8a776a;
+  font-weight: 700;
+}
+
+.detail-info dd {
+  margin: 0;
+  color: #2f261f;
+}
+
+.detail-map-link {
+  display: block;
+  padding: 14px 18px;
+  border-radius: 12px;
+  background: #5b3d2e;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.detail-map-link:hover {
+  background: #3f2a20;
+}
+
+@media (max-width: 600px) {
+  .detail-page {
+    padding-top: 28px;
+  }
+
+  .detail-card {
+    padding: 24px 20px;
+  }
+
+  .detail-card h1 {
+    font-size: 28px;
+  }
+
+  .detail-info div {
+    grid-template-columns: 1fr;
+    gap: 5px;
+  }
 }
